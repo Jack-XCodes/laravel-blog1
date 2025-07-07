@@ -1,20 +1,19 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model
+class Comment extends Model
 {
-     use HasFactory;
+    use HasFactory;
 
-    // 👇 This allows mass-assignment of these fields
     protected $fillable = [
-        'title',
         'content',
         'user_id',
-        'image_path',
-        'status'
+        'post_id',
+        'parent_id'
     ];
 
     protected $casts = [
@@ -22,19 +21,23 @@ class Post extends Model
         'updated_at' => 'datetime',
     ];
 
-    // 👇 This defines the relationship: each post belongs to one user
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function comments()
+    public function post()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(Post::class);
     }
 
-    public function scopePublished($query)
+    public function parent()
     {
-        return $query->where('status', 'published');
+        return $this->belongsTo(Comment::class, 'parent_id');
     }
-}
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id');
+    }
+} 

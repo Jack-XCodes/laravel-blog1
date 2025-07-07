@@ -1,10 +1,8 @@
-{{-- resources/views/posts/edit.blade.php --}}
-
 @extends('layouts.app')
 
 @section('header')
     <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        {{ __('Edit Post') }}
+        {{ __('Create New Post') }}
     </h2>
 @endsection
 
@@ -13,15 +11,14 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
+                <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>Edit Post
+                        <i class="bi bi-plus-circle me-2"></i>Create New Post
                     </h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('posts.update', $post) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('posts.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
                         
                         <!-- Title -->
                         <div class="mb-4">
@@ -30,7 +27,7 @@
                                    name="title" 
                                    id="title" 
                                    class="form-control @error('title') is-invalid @enderror" 
-                                   value="{{ old('title', $post->title) }}" 
+                                   value="{{ old('title') }}" 
                                    placeholder="Enter an engaging title for your post" 
                                    required>
                             @error('title')
@@ -45,7 +42,7 @@
                                       id="excerpt" 
                                       rows="3" 
                                       class="form-control @error('excerpt') is-invalid @enderror" 
-                                      placeholder="Write a brief summary of your post (optional)">{{ old('excerpt', $post->excerpt) }}</textarea>
+                                      placeholder="Write a brief summary of your post (optional)">{{ old('excerpt') }}</textarea>
                             @error('excerpt')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -60,44 +57,16 @@
                                       rows="12" 
                                       class="form-control @error('content') is-invalid @enderror" 
                                       placeholder="Share your thoughts, experiences, or knowledge..." 
-                                      required>{{ old('content', $post->content) }}</textarea>
+                                      required>{{ old('content') }}</textarea>
                             @error('content')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="form-text">Write in markdown or plain text. Express yourself freely!</div>
                         </div>
 
-                        <!-- Current Image Display -->
-                        @if($post->featured_image)
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Current Featured Image</label>
-                                <div class="border rounded p-3 bg-light">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-4">
-                                            <img src="{{ asset('storage/' . $post->featured_image) }}" 
-                                                 class="img-fluid rounded" 
-                                                 alt="Current featured image"
-                                                 style="max-height: 120px; object-fit: cover;">
-                                        </div>
-                                        <div class="col-md-8">
-                                            <p class="mb-2 text-muted">Current image will be replaced if you upload a new one.</p>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="remove_image" id="remove_image" value="1">
-                                                <label class="form-check-label text-danger" for="remove_image">
-                                                    <i class="bi bi-trash me-1"></i>Remove current image
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Featured Image Upload -->
+                        <!-- Featured Image -->
                         <div class="mb-4">
-                            <label for="featured_image" class="form-label fw-semibold">
-                                {{ $post->featured_image ? 'Replace Featured Image' : 'Featured Image' }}
-                            </label>
+                            <label for="featured_image" class="form-label fw-semibold">Featured Image</label>
                             <div class="border border-2 border-dashed border-secondary rounded p-4 text-center bg-light">
                                 <input type="file" 
                                        name="featured_image" 
@@ -123,36 +92,13 @@
 
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('posts.show', $post) }}" class="btn btn-outline-secondary">
+                            <a href="{{ route('posts.index') }}" class="btn btn-outline-secondary">
                                 <i class="bi bi-arrow-left me-1"></i>Cancel
                             </a>
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="bi bi-check-circle me-2"></i>Update Post
-                                </button>
-                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>Publish Post
+                            </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Delete Post Section -->
-            <div class="card mt-4 border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Danger Zone
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted mb-3">Once you delete this post, there is no going back. Please be certain.</p>
-                    <form action="{{ route('posts.destroy', $post) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                class="btn btn-danger" 
-                                onclick="return confirm('Are you absolutely sure you want to delete this post? This action cannot be undone.')">
-                            <i class="bi bi-trash me-1"></i>Delete Post
-                        </button>
                     </form>
                 </div>
             </div>
@@ -204,14 +150,5 @@ dropZone.addEventListener('drop', function(e) {
         document.getElementById('featured_image').dispatchEvent(new Event('change'));
     }
 });
-
-// Handle remove image checkbox
-document.getElementById('remove_image')?.addEventListener('change', function() {
-    if (this.checked) {
-        // Clear any new image selection
-        document.getElementById('featured_image').value = '';
-        clearImagePreview();
-    }
-});
 </script>
-@endsection
+@endsection 
